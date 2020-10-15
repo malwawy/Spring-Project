@@ -3,6 +3,7 @@ package com.example.todoapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import javax.validation.Validator;
 

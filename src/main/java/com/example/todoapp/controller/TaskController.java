@@ -1,9 +1,11 @@
 package com.example.todoapp.controller;
 
+import com.example.todoapp.adapter.SqlTaskRepository;
 import com.example.todoapp.model.Task;
 import com.example.todoapp.model.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +20,13 @@ import java.util.Optional;
 @RestController
 class TaskController {
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
+
     private final TaskRepository repository;
 
-
-    TaskController(final TaskRepository repository) {
+    public TaskController(final TaskRepository repository) {
         this.repository = repository;
     }
+
     @GetMapping(value = "/tasks", params = {"!sort", "!page", "!size"})
     ResponseEntity<List<Task>> readAllTasks(){
         logger.warn("Exposing all the tasks!");
@@ -58,8 +61,11 @@ class TaskController {
         if(!repository.existsById(id)){
             return ResponseEntity.notFound().build();
         }
-        toUpdate.setId(id);
-        repository.save(toUpdate);
+        repository.findById(id)
+                .ifPresent(task -> {
+                    task.updateFrom(toUpdate);
+                    repository.save(task);
+                });
         return ResponseEntity.noContent().build();
 
     }
